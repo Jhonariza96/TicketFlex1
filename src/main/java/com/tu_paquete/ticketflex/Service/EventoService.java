@@ -159,6 +159,12 @@ public class EventoService {
     public Page<Evento> obtenerEventosPorCreadorId(Integer idUsuario, Pageable pageable) {
         return eventoRepository.findByCreador_IdUsuario(idUsuario, pageable);
     }
-
+    
+    public Long contarBoletosVendidosPorCreador(Integer idCreador) {
+        return boletoRepository.countBoletosVendidosPorCreador(
+            idCreador, 
+            "ACTIVO" // Pasar como String
+        );
+    }
     }
 

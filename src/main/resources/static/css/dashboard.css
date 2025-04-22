@@ -334,3 +334,16 @@ h2::after {
     color: var(--text-color);
     opacity: 0.9;
 }
+
+/* Reduce el ancho de los inputs a un 50% o el valor que prefieras */
+    .form-control {
+        width: 80% !important;
+        display: block;
+    }
+    
+    /* Opcional: Centra los inputs reducidos */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }

@@ -1,5 +1,6 @@
 package com.tu_paquete.ticketflex.Controller;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,10 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.tu_paquete.ticketflex.Model.Boleto;
 import com.tu_paquete.ticketflex.Model.Evento;
 import com.tu_paquete.ticketflex.Model.Usuario;
+import com.tu_paquete.ticketflex.Repository.BoletoRepository;
+import com.tu_paquete.ticketflex.Repository.EventoRepository;
 import com.tu_paquete.ticketflex.Repository.UsuarioRepository;
 import com.tu_paquete.ticketflex.Service.EventoService;
+import com.tu_paquete.ticketflex.dto.EventoConEstadisticas;
 
 import org.springframework.security.core.Authentication;
 
@@ -30,6 +35,12 @@ public class AdminController {
 	
 	@Autowired
     private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private BoletoRepository boletoRepository;
+	
+	@Autowired
+	private EventoRepository eventoRepository;
 
 	@GetMapping("/dashboard")
 	public String dashboard(Model model, Authentication authentication) {
@@ -40,8 +51,17 @@ public class AdminController {
 	    
 	    // Obtener solo los eventos del usuario autenticado
 	    List<Evento> eventos = eventoService.obtenerEventosPorCreador(usuario.getIdUsuario());
+	    Long boletosVendidos = eventoService.contarBoletosVendidosPorCreador(usuario.getIdUsuario()); // Nuevo
+
 	    
+	    // Agregar atributos al modelo
+	    model.addAttribute("nombreUsuario", usuario.getNombre()); // Asumiendo que tienes getNombre()
+	    model.addAttribute("apellidoUsuario", usuario.getApellido()); // Si necesitas el apellido
+	    model.addAttribute("emailUsuario", usuario.getEmail()); // Si necesitas el email
 	    model.addAttribute("eventos", eventos);
+	    model.addAttribute("totalBoletosVendidos", boletosVendidos); // Envía el total filtrado
+
+	    
 	    return "admin/dashboard";
 	}
 
@@ -72,7 +92,7 @@ public class AdminController {
         evento.setCreador(creador);
         
         eventoService.crearEvento(evento, email);
-        return "redirect:/admin/eventos/listar";
+        return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/eventos/listar")
@@ -130,11 +150,37 @@ public class AdminController {
         
         return "redirect:/admin/dashboard?success=evento_actualizado";
     }
-
+    
     @GetMapping("/estadisticas")
-    public String mostrarEstadisticas(Model model) {
-        // Aquí puedes obtener estadísticas desde el servicio y pasarlas al modelo
-        return "admin/estadisticas"; // Renderiza la vista de estadísticas
+    public String mostrarEstadisticas(Model model, Authentication authentication) {
+        // Obtener el usuario/admin logueado
+        String email = authentication.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                              .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        // 1. Obtener solo los eventos del administrador actual
+        List<EventoConEstadisticas> eventos = eventoRepository.findEventosConEstadisticas(usuario.getIdUsuario());
+        
+        // 2. Calcular estadísticas SOLO para los eventos de este administrador
+        Long totalBoletosVendidos = eventos.stream()
+                                         .mapToLong(EventoConEstadisticas::getBoletosVendidos)
+                                         .sum();
+        
+        BigDecimal ingresosTotales = eventos.stream()
+                                         .map(EventoConEstadisticas::getIngresos)
+                                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        double ocupacionPromedio = eventos.stream()
+                                       .mapToInt(EventoConEstadisticas::getPorcentajeOcupacion)
+                                       .average()
+                                       .orElse(0.0);
+        
+        model.addAttribute("totalBoletosVendidos", totalBoletosVendidos);
+        model.addAttribute("ingresosTotales", ingresosTotales);
+        model.addAttribute("ocupacionPromedio", Math.round(ocupacionPromedio));
+        model.addAttribute("eventos", eventos);
+        
+        return "admin/estadisticas";
     }
     
  // Método GET para eliminar el evento

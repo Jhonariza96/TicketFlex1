@@ -14,9 +14,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    
+    private final CustomLoginSuccessHandler successHandler;
 
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    public SecurityConfig(UserDetailsService userDetailsService, CustomLoginSuccessHandler successHandler) {
         this.userDetailsService = userDetailsService;
+        this.successHandler = successHandler;
     }
 
     @Bean
@@ -24,17 +27,22 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF (solo para desarrollo)
             .authorizeHttpRequests(auth -> auth
+            	.requestMatchers("/", "/index", "/public/**", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("Administrador") // Solo "Administrador" puede acceder a /admin/**
-                .requestMatchers("/public/**", "/css/**", "/js/**", "/images/**").permitAll() // Rutas públicas
+                .requestMatchers("/api/eventos/listar").permitAll() // Permitir sin autenticación
+                .requestMatchers("/api/eventos/filtrar").permitAll()
+                .requestMatchers("/api/usuarios/login").permitAll()
+
                 .anyRequest().authenticated() // Todas las demás rutas requieren autenticación
             )
             .formLogin(form -> form
-                .loginPage("/login") // Página personalizada de inicio de sesión
-                .loginProcessingUrl("/login") // URL para procesar el login
-                .defaultSuccessUrl("/admin/dashboard", true) // Redirección tras login exitoso
-                .failureUrl("/login?error=true") // Redirección en caso de error
-                .permitAll()
-            )
+            	    .loginPage("/login")
+            	    .loginProcessingUrl("/login")
+            	    .successHandler(successHandler) // Usa el handler personalizado
+            	    .failureUrl("/login?error=true")
+            	    .permitAll()
+            	)
+
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")

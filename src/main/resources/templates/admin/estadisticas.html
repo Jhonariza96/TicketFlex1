@@ -62,75 +62,60 @@
         </div>
 
         <!-- Resumen General -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <h6 class="card-title">Eventos Activos</h6>
-                        <h2 class="card-value" id="totalEventos">8</h2>
-                        <div class="stat-trend text-success">
-                            <i class="fas fa-arrow-up mr-1"></i>
-                            <span>5% vs mes anterior</span>
-                        </div>
-                    </div>
-                </div>
+<div class="row mb-4">
+    <!-- Boletas Vendidas -->
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Boletas Vendidas</h6>
+                <h2 class="card-value" id="totalBoletas" 
+                    th:text="${totalBoletosVendidos}">0</h2>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <h6 class="card-title">Boletas Vendidas</h6>
-                        <h2 class="card-value" id="totalBoletas">1,240</h2>
-                        <div class="stat-trend text-success">
-                            <i class="fas fa-arrow-up mr-1"></i>
-                            <span>15% vs mes anterior</span>
-                        </div>
-                    </div>
-                </div>
+        </div>
+    </div>
+    
+    <!-- Ingresos Totales -->
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Ingresos Totales</h6>
+                <h2 class="card-value" id="totalIngresos" 
+                    th:text="'$' + ${#numbers.formatDecimal(ingresosTotales, 1, 2, 'COMMA')}">$0</h2>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <h6 class="card-title">Ingresos Totales</h6>
-                        <h2 class="card-value" id="totalIngresos">$24,580,000</h2>
-                        <div class="stat-trend text-success">
-                            <i class="fas fa-arrow-up mr-1"></i>
-                            <span>8% vs mes anterior</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <h6 class="card-title">Ocupación Promedio</h6>
-                        <h2 class="card-value" id="ocupacionPromedio">78%</h2>
-                        <div class="progress mt-2" style="height: 6px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 78%"></div>
-                        </div>
-                    </div>
+        </div>
+    </div>
+    
+    <!-- Ocupación Promedio -->
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <h6 class="card-title">Ocupación Promedio</h6>
+                <h2 class="card-value" id="ocupacionPromedio" 
+                    th:text="${ocupacionPromedio} + '%'">0%</h2>
+                <div class="progress mt-2" style="height: 6px;">
+                    <div class="progress-bar" 
+                         th:classappend="${ocupacionPromedio} > 80 ? 'bg-success' : 
+                                       (${ocupacionPromedio} > 50 ? 'bg-warning' : 'bg-danger')"
+                         th:style="'width:' + ${ocupacionPromedio} + '%'"></div>
                 </div>
             </div>
         </div>
-
+    </div>
+</div>
         <!-- Gráficos Principales -->
+        
+        
+        <!-- Reporte de Power BI -->
         <div class="row mb-4">
-            <div class="col-md-8">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Ventas por Evento (Últimos 30 días)</h5>
+                        <h5 class="card-title mb-0">Reporte Interactivo </h5>
                     </div>
-                    <div class="card-body">
-                        <canvas id="ventasEventoChart" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Métodos de Pago</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="metodosPagoChart" height="300"></canvas>
+                    <div class="card-body text-center">
+                        <iframe title="Ticketflex" width="100%" height="600" 
+                                src="https://app.powerbi.com/view?r=eyJrIjoiYzE1M2RmZWItM2E4Yi00NGY4LTgxOTktOTlmYjFlOWE1YzI2IiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9" 
+                                frameborder="0" allowFullScreen="true"></iframe>
                     </div>
                 </div>
             </div>
@@ -157,27 +142,28 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="evento : ${eventos}">
-                                <td th:text="${evento.nombre}">Nombre Evento</td>
-                                <td th:text="${#temporals.format(evento.fecha, 'dd/MM/yyyy')}">Fecha</td>
-                                <td th:text="${evento.boletasVendidas} + '/' + ${evento.capacidad}">0/100</td>
-                                <td>
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar" 
-                                             th:classappend="${evento.porcentajeOcupacion > 80} ? 'bg-success' : 
-                                                           (${evento.porcentajeOcupacion > 50} ? 'bg-warning' : 'bg-danger')"
-                                             th:style="'width:' + ${evento.porcentajeOcupacion} + '%'"></div>
-                                    </div>
-                                </td>
-                                <td th:text="${evento.porcentajeOcupacion} + '%'">0%</td>
-                                <td th:text="'$' + ${#numbers.formatDecimal(evento.ingresos, 1, 2, 'COMMA')}">$0</td>
-                                <td>
-                                    <a th:href="@{/admin/eventos/{id}/detalles(id=${evento.id})}" 
-                                       class="btn btn-sm btn-outline-info">
-                                       <i class="fas fa-chart-bar"></i> Detalles
-                                    </a>
-                                </td>
-                            </tr>
+                        <tr th:each="evento : ${eventos}">
+    <td th:text="${evento.nombreEvento}">Nombre Evento</td>
+    <td th:text="${#temporals.format(evento.fecha, 'dd/MM/yyyy')}">Fecha</td>
+    <td th:text="${evento.boletosVendidos} + '/' + ${evento.capacidad}">0/100</td>
+    <td>
+        <div class="progress" style="height: 6px;">
+            <div class="progress-bar" 
+                 th:classappend="${evento.porcentajeOcupacion} > 80 ? 'bg-success' : 
+                               (${evento.porcentajeOcupacion} > 50 ? 'bg-warning' : 'bg-danger')"
+                 th:style="'width:' + ${evento.porcentajeOcupacion} + '%'"></div>
+        </div>
+    </td>
+    <td th:text="${evento.porcentajeOcupacion} + '%'">0%</td>
+    <td th:text="'$' + ${#numbers.formatDecimal(evento.ingresos, 1, 2, 'COMMA')}">$0</td>
+    <td>
+        <a th:href="@{/admin/eventos/{id}/detalles(id=${evento.idEvento})}" 
+           class="btn btn-sm btn-outline-info">
+           <i class="fas fa-chart-bar"></i> Detalles
+        </a>
+    </td>
+</tr>
+
                         </tbody>
                     </table>
                 </div>

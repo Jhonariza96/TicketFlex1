@@ -27,7 +27,7 @@ public class BoletoController {
     }
     
     // Nuevo endpoint para manejar el pago con tarjeta
-    @PostMapping("/pagar")
+    @PostMapping("/pagar-tarjeta")
     public String procesarPago(@RequestBody PagoRequest pagoRequest) {
         // Aquí procesas el pago con el banco seleccionado, tarjeta, etc.
         boolean pagoExitoso = boletoService.procesarPago(pagoRequest);

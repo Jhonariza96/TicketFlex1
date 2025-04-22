@@ -10,6 +10,7 @@ import java.util.Date;
 public class Boleto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_boleta")
     private Integer idBoleto;
 
     @ManyToOne

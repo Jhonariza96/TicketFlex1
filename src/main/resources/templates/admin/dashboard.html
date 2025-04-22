@@ -23,10 +23,11 @@
                 TicketFlex Admin
             </a>
             <div class="ml-auto d-flex align-items-center">
+
                 <span class="navbar-text mr-3">
-                    <i class="fas fa-user-circle mr-2"></i>
-                    <span sec:authentication="name"></span>
-                </span>
+    				<i class="fas fa-user-circle mr-2"></i>
+    				<span th:text="${nombreUsuario}"></span>
+				</span>
                 <form th:action="@{/logout}" method="post" class="form-inline">
                     <button type="submit" class="btn btn-outline-light">
                         <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
@@ -84,13 +85,13 @@
             </div>
             <div class="col-md-4 mb-4">
                 <div class="card tickets-card">
-                    <div class="card-body text-center">
-                        <i class="fas fa-ticket-alt fa-3x mb-3" style="color: #00b09b;"></i>
-                        <h5 class="card-title">Boletos Vendidos</h5>
-                        <p class="card-text">Aqui iran los boletos vendidos directo desde la BD</p>
-                        <small class="text-muted">+15% respecto al mes pasado</small>
-                    </div>
-                </div>
+                	<div class="card-body text-center">
+        				<i class="fas fa-ticket-alt fa-3x mb-3" style="color: #00b09b;"></i>
+        				<h5 class="card-title">Boletos Vendidos</h5>
+        				<p class="card-text" th:text="${totalBoletosVendidos}">0</p>
+        				<small class="text-muted">+15% respecto al mes pasado</small>
+    				</div>
+				</div>
             </div>
             <div class="col-md-4 mb-4">
                 <div class="card users-card">
@@ -113,6 +114,7 @@
                         <th><i class="fas fa-heading mr-2"></i>Nombre</th>
                         <th><i class="fas fa-calendar-day mr-2"></i>Fecha</th>
                         <th><i class="fas fa-map-marker-alt mr-2"></i>Lugar</th>
+                        <th><i class="fas fa-ticket-alt mr-2"></i>Tickets</th>
                         <th><i class="fas fa-cogs mr-2"></i>Acciones</th>
                     </tr>
                 </thead>
@@ -121,6 +123,7 @@
                         <td th:text="${evento.nombreEvento}">Nombre del Evento</td>
                         <td th:text="${#temporals.format(evento.fecha, 'dd/MM/yyyy')}">Fecha</td>
                         <td th:text="${evento.lugar}">Lugar</td>
+                        <td th:text="${evento.disponibilidad}">Tickets</td>
                         <td>
                             <a th:href="@{/admin/eventos/editar/{id}(id=${evento.idEvento})}" 
                                class="btn btn-warning btn-sm">

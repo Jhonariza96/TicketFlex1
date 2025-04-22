@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Service
@@ -34,18 +35,26 @@ public class BoletoService {
 
     @Transactional
     public Boleto comprarBoleto(Integer idEvento, Integer idUsuario, Integer cantidad) {
-        // 1. Obtener datos necesarios
+        // Validaciones iniciales
+        if (cantidad <= 0 || cantidad > 5) {
+            throw new RuntimeException("La cantidad debe ser entre 1 y 5");
+        }
+
         Evento evento = eventoRepository.findById(idEvento)
             .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
+        
         Usuario usuario = usuarioRepository.findById(idUsuario)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // 2. Validar disponibilidad
+        // Verificar disponibilidad con bloqueo pesimista
+        evento = eventoRepository.findByIdWithLock(idEvento)
+            .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
+        
         if (evento.getDisponibilidad() < cantidad) {
-            throw new RuntimeException("No hay suficiente disponibilidad para este evento");
+            throw new RuntimeException("No hay suficiente disponibilidad");
         }
 
-        // 3. Crear y guardar el boleto
+        // Crear boleto
         Boleto boleto = new Boleto();
         boleto.setEvento(evento);
         boleto.setUsuario(usuario);
@@ -53,14 +62,17 @@ public class BoletoService {
         boleto.setCantidad(cantidad);
         boleto.setPrecio(evento.getPrecioBase());
         boleto.setPrecioTotal(evento.getPrecioBase().multiply(BigDecimal.valueOf(cantidad)));
+        boleto.setEstado(Boleto.EstadoBoleto.PENDIENTE); // Estado inicial como PENDIENTE
+        boleto.setFechaLimitePago(LocalDate.now().plusDays(3));
 
-        Boleto boletoGuardado = boletoRepository.save(boleto);
-
-        // 4. Actualizar disponibilidad del evento
+        // Actualizar disponibilidad
         evento.setDisponibilidad(evento.getDisponibilidad() - cantidad);
         eventoRepository.save(evento);
 
-        // 5. Crear y guardar la transacción
+        // Guardar boleto
+        Boleto boletoGuardado = boletoRepository.save(boleto);
+
+        // Crear transacción (pero no marcarla como completada aún)
         Transaccion transaccion = new Transaccion();
         transaccion.setIdBoleta(boletoGuardado.getIdBoleto());
         transaccion.setIdUsuario(usuario.getIdUsuario());
@@ -68,7 +80,7 @@ public class BoletoService {
         transaccion.setCantidadBoletos(cantidad);
         transaccion.setTotal(boletoGuardado.getPrecioTotal());
         transaccion.setFechaPago(new Timestamp(System.currentTimeMillis()));
-        transaccion.setEstadoPago("completado");
+        transaccion.setEstadoPago("pendiente"); // Estado inicial
         
         transaccionService.crearTransaccion(transaccion);
 
@@ -97,6 +109,7 @@ public class BoletoService {
         // Si todo va bien, simula que el pago fue exitoso
         return true;
     }
+    
 }
 
 
