@@ -114,7 +114,3 @@ public class Transaccion {
         this.fechaPago = fechaPago;
     }
 }
-
-
-
-  

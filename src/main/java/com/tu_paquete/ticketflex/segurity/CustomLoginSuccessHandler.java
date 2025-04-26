@@ -26,7 +26,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
                 response.sendRedirect("/admin/dashboard");
                 return;
             } else if ("ROLE_Usuario".equals(rol)) {
-                response.sendRedirect("/usuario/inicio");
+                response.sendRedirect("/usuario/index");
                 return;
             }
         }

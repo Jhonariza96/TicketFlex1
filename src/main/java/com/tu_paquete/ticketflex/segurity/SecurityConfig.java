@@ -28,10 +28,12 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF (solo para desarrollo)
             .authorizeHttpRequests(auth -> auth
             	.requestMatchers("/", "/index", "/public/**", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("Administrador") // Solo "Administrador" puede acceder a /admin/**
+                .requestMatchers("/admin/**").hasRole("Administrador")      
                 .requestMatchers("/api/eventos/listar").permitAll() // Permitir sin autenticación
                 .requestMatchers("/api/eventos/filtrar").permitAll()
                 .requestMatchers("/api/usuarios/login").permitAll()
+                .requestMatchers("/api/**").permitAll()
+                
 
                 .anyRequest().authenticated() // Todas las demás rutas requieren autenticación
             )
