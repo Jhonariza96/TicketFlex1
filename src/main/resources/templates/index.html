@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="/css/modern.css"> <!-- Nuevo CSS para el diseño moderno -->
     <link rel="icon" type="image/png" href="/images/favicon.png">
 </head>
+
 <body>
     <!-- Header Rediseñado -->
     <header class="modern-header">
@@ -17,7 +19,7 @@
                 <div class="logo">
                     <a href="#">Ticket<span>Flex</span></a>
                 </div>
-                
+
                 <ul class="nav-links" id="navLinks">
                     <li><a href="#"><i class="fas fa-home"></i> Inicio</a></li>
                     <li><a href="#eventosSection"><i class="fas fa-calendar-alt"></i> Eventos</a></li>
@@ -30,23 +32,23 @@
                         </ul>
                     </li>
                     <li><a href="#footer"><i class="fas fa-envelope"></i> Contacto</a></li>
-                    
-                     <!-- Botones de autenticación -->
-    <!-- Botones de login/register (se ocultan al iniciar sesión) -->
-<li id="loginButtonSection">
-    <button id="showLoginButton">Iniciar Sesión</button>
-    <button id="showRegisterButton">Registrar</button>
-</li>
 
-<!-- Menú de usuario (se muestra al iniciar sesión) -->
-<li id="userSection" class="hidden">
-    <span id="userName"></span>
-    <div id="logoutMenu" class="hidden">
-        <button id="logoutButton">Cerrar Sesión</button>
-    </div>
-</li>
+                    <!-- Botones de autenticación -->
+                    <!-- Botones de login/register (se ocultan al iniciar sesión) -->
+                    <li id="loginButtonSection">
+                        <button id="showLoginButton">Iniciar Sesión</button>
+                        <button id="showRegisterButton">Registrar</button>
+                    </li>
+
+                    <!-- Menú de usuario (se muestra al iniciar sesión) -->
+                    <li id="userSection" class="hidden">
+                        <span id="userName"></span>
+                        <div id="logoutMenu" class="hidden">
+                            <button id="logoutButton">Cerrar Sesión</button>
+                        </div>
+                    </li>
                 </ul>
-                
+
                 <div class="menu-toggle" id="mobileMenu">
                     <span></span>
                     <span></span>
@@ -55,7 +57,7 @@
             </nav>
         </div>
     </header>
-    
+
 
     <!-- Hero Banner -->
     <section class="hero-banner">
@@ -87,7 +89,7 @@
                 <h2><i class="fas fa-calendar-check"></i> Eventos Disponibles</h2>
                 <button class="filter-toggle" id="filterToggle"><i class="fas fa-filter"></i> Filtros</button>
             </div>
-            
+
             <div class="filters-container" id="filtersContainer">
                 <div class="filter-group">
                     <label for="lugar"><i class="fas fa-map-marker-alt"></i> Lugar:</label>
@@ -99,241 +101,239 @@
                         <option value="Cartagena">Cartagena</option>
                     </select>
                 </div>
-                
+
                 <div class="filter-group">
                     <label for="fecha"><i class="far fa-calendar-alt"></i> Fecha:</label>
                     <input type="date" id="fecha">
                 </div>
-                
+
                 <div class="filter-group">
                     <label for="categoria"><i class="fas fa-tag"></i> Categoría:</label>
                     <select id="categoria">
                         <option value="">Todas</option>
                         <option value="Concierto">Concierto</option>
+                        <option value="Festival">Festival</option>
                         <option value="Teatro">Teatro</option>
+                        <option value="Feria">Feria</option>
+                        <option value="Deportes">Deportes</option>
                     </select>
                 </div>
-                
+
                 <div class="filter-group">
                     <label for="artista"><i class="fas fa-user"></i> Artista:</label>
                     <input type="text" id="artista" placeholder="Nombre del artista">
                 </div>
-                
+
                 <div class="filter-actions">
                     <button id="filtrar" class="btn-primary">Aplicar Filtros</button>
                     <button id="resetFilters" class="btn-outline">Limpiar</button>
                 </div>
             </div>
-            
+
             <div id="eventosList" class="events-grid">
                 <!-- Los eventos se cargarán aquí dinámicamente como antes -->
             </div>
         </div>
     </section>
 
-       <!-- Modal para Inicio de Sesión -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <span id="closeLoginModal" class="close">&times;</span>
-        <h2 id="modalTitle">Inicio de Sesión</h2>
-        
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            
-            <div class="form-options">
-                <label class="remember-me">
-                    <input type="checkbox"> Recordar sesión
-                </label>
-                <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-            </div>
-            
-            <button type="submit" class="submit-btn">Iniciar Sesión</button>
-            
-            <div class="divider">
-                <span>o</span>
-            </div>
-            
-            <div class="social-login">
-                <button type="button" class="social-btn google-btn">
-                    <i class="fab fa-google"></i> Continuar con Google
-                </button>
-                <button type="button" class="social-btn facebook-btn">
-                    <i class="fab fa-facebook-f"></i> Continuar con Facebook
-                </button>
-            </div>
-            
-            <p class="switch-modal">¿No tienes cuenta? <a href="#" id="showRegister">Regístrate aquí</a></p>
-        </form>
-    </div>
-</div>
+    <!-- Modal para Inicio de Sesión -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span id="closeLoginModal" class="close">&times;</span>
+            <h2 id="modalTitle">Inicio de Sesión</h2>
 
-<!-- Modal para Registro -->
-<div id="registerModal" class="modal">
-    <div class="modal-content">
-        <span id="closeRegisterModal" class="close">&times;</span>
-        <h2 id="modalTitle">Registro de Usuario</h2>
-        
-        <form id="registroForm">
-            <div class="form-row">
-                <div class="form-group half-width">
-                    <label for="nombre">Nombre*:</label>
-                    <input type="text" id="nombre" name="nombre" required>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
                 </div>
-                
-                <div class="form-group half-width">
-                    <label for="apellido">Apellido*:</label>
-                    <input type="text" id="apellido" name="apellido" required>
+
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" required>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="emailReg">Email*:</label>
-                <input type="email" id="emailReg" name="email" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="passwordReg">Contraseña*:</label>
-                <input type="password" id="passwordReg" name="password" required minlength="6">
-            </div>
-            
-            <div class="form-group">
-                <label for="telefono">Teléfono:</label>
-                <input type="tel" id="telefono" name="telefono">
-            </div>
-            
-            <div class="form-group">
-                <label for="direccion">Dirección:</label>
-                <input type="text" id="direccion" name="direccion">
-            </div>
-            
-            <button type="submit" class="submit-btn">Registrarse</button>
-            
-            <p class="switch-modal">¿Ya tienes cuenta? <a href="#" id="showLogin">Inicia sesión aquí</a></p>
-            
-            <p class="required-info">* Campos obligatorios</p>
-        </form>
-    </div>
-</div>
-     <!-- Modal para seleccionar cantidad de boletos -->
-	<div id="buyTicketModal" class="modal">
-  		<div class="modal-content">
-    		<span class="close" id="closeModal">&times;</span>
-    		<h2>Selecciona la cantidad de boletos y graderia</h2>
-    		
-    			<!-- Selección de cantidad de boletos y graderia-->
-    			<label for="ticketCount">Cantidad de boletos:</label>
-    			<input type="number" id="ticketCount" name="ticketCount" min="1" max="5" value="1">
-    			<br>
-    			<label for="graderia">Gradería:</label>
-    			<select id="graderia" name="graderia">
-            		<option value="general">General</option>
-            		<option value="vip">VIP</option>
-            		<option value="preferente">Preferencial</option>
-        		</select>
-        		<br/><br/>
-        		
-        		<!-- Seleccion para la cantidad de cuotas -->
-        		<label for="cuotas">Cuotas:</label>
-        		<input type="number" id="cuotas" name="cuotas" min="1" max = "6" value="1">
-        		
-    			
-    			
-    	<!-- Selección del banco para el pago -->
-        <label for="bank">Selecciona tu banco:</label>
-        <select id="bank" onchange="toggleCardFields()">
-            <option value="" disabled selected>Seleccione el banco</option>
-            <option value="TicketFlex">TicketFlex (Tasa de interes del 0.5%)</option>
-            <option value="Bancolombia">Bancolombia</option>
-            <option value="Davivienda">Davivienda</option>
-            <option value="BBVA">BBVA</option>
-            <option value="Banco de Bogotá">Banco de Bogotá</option>
-            <option value="Caja Social">Caja Social</option>
-            <option value="Nequi">Nequi</option>
-            <option value="Movii">Movii</option>
-        </select>
 
-        <!-- Campos de tarjeta -->
-        <div id="cardDetails" style="display: none;">
-            <label for="cardNumber">Número de tarjeta:</label>
-            <input type="text" id="cardNumber" placeholder="Número de tarjeta" maxlength="16" required>
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox"> Recordar sesión
+                    </label>
+                    <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                </div>
 
-            <label for="expirationDate">Fecha de vencimiento:</label>
-            <input type="text" id="expirationDate" placeholder="MM/AA" maxlength="5" required>
+                <button type="submit" class="submit-btn">Iniciar Sesión</button>
 
-            <label for="cvv">CVV:</label>
-            <input type="text" id="cvv" placeholder="CVV" maxlength="3" required>
+                <div class="divider">
+                    <span>o</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" class="social-btn google-btn">
+                        <i class="fab fa-google"></i> Continuar con Google
+                    </button>
+                    <button type="button" class="social-btn facebook-btn">
+                        <i class="fab fa-facebook-f"></i> Continuar con Facebook
+                    </button>
+                </div>
+
+                <p class="switch-modal">¿No tienes cuenta? <a href="#" id="showRegister">Regístrate aquí</a></p>
+            </form>
         </div>
-
-        <button id="buyButton">Confirmar compra</button>
     </div>
 
+    <!-- Modal para Registro -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span id="closeRegisterModal" class="close">&times;</span>
+            <h2 id="modalTitle">Registro de Usuario</h2>
 
-    <!-- Footer Rediseñado -->
-    <footer id="footer" class="modern-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>TicketFlex</h3>
-                    <p>La mejor plataforma para compra de boletos de eventos en Colombia.</p>
-                    <div class="social-media">
-                        <a href="https://bit.ly/3YRFvKy" target="_blank"><i class="fab fa-facebook"></i></a>
-                        <a href="https://x.com/ticketflex1" target="_blank"><i class="fab fa-twitter"></i></a>
-                        <a href="https://www.instagram.com/ticketflex1/" target="_blank"><i class="fab fa-instagram"></i></a>
+            <form id="registroForm">
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="nombre">Nombre*:</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label for="apellido">Apellido*:</label>
+                        <input type="text" id="apellido" name="apellido" required>
                     </div>
                 </div>
-                
-                <div class="footer-section">
-                    <h3>Enlaces Rápidos</h3>
-                    <ul>
-                        <li><a href="#">Inicio</a></li>
-                        <li><a href="#eventosSection">Eventos</a></li>
-                        <li><a href="#">Cómo comprar</a></li>
-                    </ul>
+
+                <div class="form-group">
+                    <label for="emailReg">Email*:</label>
+                    <input type="email" id="emailReg" name="email" required>
                 </div>
-                
-                <div class="footer-section">
-                    <h3>Contacto</h3>
-                    <ul>
-                        <li><i class="fas fa-phone"></i> +57 333 2608 028</li>
-                        <li><i class="fas fa-envelope"></i> info@ticketflex.com</li>
-                    </ul>
+
+                <div class="form-group">
+                    <label for="passwordReg">Contraseña*:</label>
+                    <input type="password" id="passwordReg" name="password" required minlength="6">
                 </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2024 TicketFlex. Todos los derechos reservados.</p>
-                <div class="legal-links">
-                  	<a href="/politica-privacidad.html">Política de Privacidad</a>
-        			<a href="/terminos-servicio.html">Términos de Servicio</a>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="tel" id="telefono" name="telefono">
                 </div>
-            </div>
+
+                <div class="form-group">
+                    <label for="direccion">Dirección:</label>
+                    <input type="text" id="direccion" name="direccion">
+                </div>
+
+                <button type="submit" class="submit-btn">Registrarse</button>
+
+                <p class="switch-modal">¿Ya tienes cuenta? <a href="#" id="showLogin">Inicia sesión aquí</a></p>
+
+                <p class="required-info">* Campos obligatorios</p>
+            </form>
         </div>
-    </footer>
-
-    <!-- Botón para subir (manteniendo funcionalidad) -->
-    <div class="scroll-to-top" id="scrollToTopButton">
-        <i class="fas fa-arrow-up"></i>
     </div>
-    
-    
-    <!--============================================================================================================ -->
-    <!--  CODIGO -->
-    <script src="/js/script.js"></script>
-    
+    <!-- Modal para seleccionar cantidad de boletos -->
+    <div id="buyTicketModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Selecciona la cantidad de boletos y graderia</h2>
+
+            <!-- Selección de cantidad de boletos y graderia-->
+            <label for="ticketCount">Cantidad de boletos:</label>
+            <input type="number" id="ticketCount" name="ticketCount" min="1" max="5" value="1">
+            <br>
+            <label for="graderia">Gradería:</label>
+            <select id="graderia" name="graderia">
+                <option value="general">General</option>
+                <option value="vip">VIP</option>
+                <option value="preferente">Preferencial</option>
+            </select>
+            <br /><br />
+
+            <!-- Seleccion para la cantidad de cuotas -->
+            <label for="cuotas">Cuotas:</label>
+            <input type="number" id="cuotas" name="cuotas" min="1" max="6" value="1">
+
+
+
+            <!-- Selección del banco para el pago -->
+            <label for="bank">Selecciona tu banco:</label>
+            <select id="bank" onchange="toggleCardFields()">
+                <option value="" disabled selected>Seleccione el banco</option>
+                <option value="TicketFlex">TicketFlex (Tasa de interes del 0.5%)</option>
+                <option value="Bancolombia">Bancolombia</option>
+                <option value="Davivienda">Davivienda</option>
+                <option value="BBVA">BBVA</option>
+                <option value="Banco de Bogotá">Banco de Bogotá</option>
+                <option value="Caja Social">Caja Social</option>
+                <option value="Nequi">Nequi</option>
+                <option value="Movii">Movii</option>
+            </select>
+
+            <!-- Campos de tarjeta -->
+            <div id="cardDetails" style="display: none;">
+                <label for="cardNumber">Número de tarjeta:</label>
+                <input type="text" id="cardNumber" placeholder="Número de tarjeta" maxlength="16" required>
+
+                <label for="expirationDate">Fecha de vencimiento:</label>
+                <input type="text" id="expirationDate" placeholder="MM/AA" maxlength="5" required>
+
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" placeholder="CVV" maxlength="3" required>
+            </div>
+
+            <button id="buyButton">Confirmar compra</button>
+        </div>
+
+
+        <!-- Footer Rediseñado -->
+        <footer id="footer" class="modern-footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>TicketFlex</h3>
+                        <p>La mejor plataforma para compra de boletos de eventos en Colombia.</p>
+                        <div class="social-media">
+                            <a href="https://bit.ly/3YRFvKy" target="_blank"><i class="fab fa-facebook"></i></a>
+                            <a href="https://x.com/ticketflex1" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://www.instagram.com/ticketflex1/" target="_blank"><i
+                                    class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="footer-section">
+                        <h3>Enlaces Rápidos</h3>
+                        <ul>
+                            <li><a href="#">Inicio</a></li>
+                            <li><a href="#eventosSection">Eventos</a></li>
+                            <li><a href="#">Cómo comprar</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-section">
+                        <h3>Contacto</h3>
+                        <ul>
+                            <li><i class="fas fa-phone"></i> +57 333 2608 028</li>
+                            <li><i class="fas fa-envelope"></i> info@ticketflex.com</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <p>&copy; 2024 TicketFlex. Todos los derechos reservados.</p>
+                    <div class="legal-links">
+                        <a href="/politica-privacidad.html">Política de Privacidad</a>
+                        <a href="/terminos-servicio.html">Términos de Servicio</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Botón para subir (manteniendo funcionalidad) -->
+        <div class="scroll-to-top" id="scrollToTopButton">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+
+
+        <!--============================================================================================================ -->
+        <!--  CODIGO -->
+        <script src="/js/script.js"></script>
+
 </body>
+
 </html>
-
-
-
-
-
-
-

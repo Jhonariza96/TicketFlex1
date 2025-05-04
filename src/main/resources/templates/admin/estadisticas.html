@@ -178,12 +178,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Obtener tema guardado
+            // Configuración inicial del tema (tu código existente)
             const savedTheme = localStorage.getItem('themePreference') || 'dark';
             const body = document.body;
             const themeIcon = document.getElementById('themeIcon');
 
-            // Establecer el tema guardado
             if (savedTheme === 'light') {
                 body.classList.remove('theme-dark');
                 body.classList.add('theme-light');
@@ -195,7 +194,7 @@
                 themeIcon.classList.add('fa-moon');
             }
 
-            // Cambiar de tema al hacer clic en el botón
+            // Cambiar de tema al hacer clic en el botón (tu código existente)
             document.getElementById('themeToggle').addEventListener('click', function () {
                 const body = document.body;
                 const themeIcon = document.getElementById('themeIcon');
@@ -213,6 +212,88 @@
                     themeIcon.classList.add('fa-moon');
                     localStorage.setItem('themePreference', 'dark');
                 }
+            });
+
+            // Inicializar el date range picker
+            $('#rangoFechas').daterangepicker({
+                opens: 'left',
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    applyLabel: 'Aplicar',
+                    cancelLabel: 'Cancelar',
+                    daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+                    monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    firstDay: 1
+                }
+            });
+
+            // Manejar el envío del formulario de filtros
+            $('#filtroEstadisticas').submit(function (e) {
+                e.preventDefault();
+
+                // Mostrar carga
+                $('.stat-card').addClass('loading');
+
+                // Obtener datos del formulario
+                const rangoFechas = $('#rangoFechas').val();
+                const tipoEvento = $('#tipoEvento').val();
+
+                // Enviar petición AJAX
+                $.ajax({
+                    url: '/admin/estadisticas/filtrar',
+                    type: 'POST',
+                    data: {
+                        rangoFechas: rangoFechas,
+                        tipoEvento: tipoEvento
+                    },
+                    success: function (response) {
+                        // Actualizar las estadísticas
+                        $('#totalBoletas').text(response.totalBoletosVendidos);
+                        $('#totalIngresos').text('$' + response.ingresosTotales.toLocaleString('es-ES'));
+                        $('#ocupacionPromedio').text(response.ocupacionPromedio + '%');
+
+                        // Actualizar la barra de progreso
+                        $('.progress-bar').css('width', response.ocupacionPromedio + '%')
+                            .removeClass('bg-success bg-warning bg-danger')
+                            .addClass(response.ocupacionPromedio > 80 ? 'bg-success' :
+                                (response.ocupacionPromedio > 50 ? 'bg-warning' : 'bg-danger'));
+
+                        // Actualizar la tabla de eventos
+                        const tbody = $('#tablaEventos tbody');
+                        tbody.empty();
+
+                        response.eventos.forEach(function (evento) {
+                            const row = `
+                                <tr>
+                                    <td>${evento.nombreEvento}</td>
+                                    <td>${new Date(evento.fecha).toLocaleDateString('es-ES')}</td>
+                                    <td>${evento.boletosVendidos}/${evento.capacidad}</td>
+                                    <td>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar ${evento.porcentajeOcupacion > 80 ? 'bg-success' :
+                                    (evento.porcentajeOcupacion > 50 ? 'bg-warning' : 'bg-danger')}" 
+                                                style="width: ${evento.porcentajeOcupacion}%"></div>
+                                        </div>
+                                    </td>
+                                    <td>${evento.porcentajeOcupacion}%</td>
+                                    <td>$${evento.ingresos.toLocaleString('es-ES')}</td>
+                                    <td>
+                                        <a href="/admin/eventos/${evento.idEvento}/detalles" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-chart-bar"></i> Detalles
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                            tbody.append(row);
+                        });
+                    },
+                    error: function (xhr) {
+                        alert('Error al aplicar filtros: ' + xhr.responseText);
+                    },
+                    complete: function () {
+                        $('.stat-card').removeClass('loading');
+                    }
+                });
             });
         });
     </script>

@@ -1,11 +1,17 @@
 package com.tu_paquete.ticketflex.Controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,6 +34,8 @@ import com.tu_paquete.ticketflex.Repository.EventoRepository;
 import com.tu_paquete.ticketflex.Repository.UsuarioRepository;
 import com.tu_paquete.ticketflex.Service.EventoService;
 import com.tu_paquete.ticketflex.Service.TicketflexService;
+import com.tu_paquete.ticketflex.Service.dto.EventoRequest;
+import com.tu_paquete.ticketflex.Service.dto.PrediccionEventoResponse;
 import com.tu_paquete.ticketflex.Service.dto.PredictionTicketflex;
 import com.tu_paquete.ticketflex.dto.EventoConEstadisticas;
 
@@ -189,6 +198,9 @@ public class AdminController {
         return "admin/estadisticas";
     }
 
+    
+    
+
     // Método GET para eliminar el evento
     @GetMapping("/eventos/eliminar/{id}")
     public String eliminarEvento(@PathVariable Integer id) {
@@ -216,32 +228,74 @@ public class AdminController {
     }
 
     @PostMapping("/prediccion/predecir")
-    public String predecir(@ModelAttribute TicketflexPrediccion datos, Model model) {
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> predecir(@RequestBody TicketflexPrediccion datos) {
         try {
             PredictionTicketflex prediction = ticketflexService.predictAndSave(datos);
 
-            model.addAttribute("prediction", prediction);
-            model.addAttribute("prediccion", prediction.getPrediction());
-            model.addAttribute("confianza", prediction.getConfidence());
-            model.addAttribute("confianzaValue", prediction.getConfidenceValue());
-            model.addAttribute("ticketflexData", datos);
-            model.addAttribute("showResult", true);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("prediccion", prediction.getPrediction());
+            response.put("confianza", prediction.getConfidence());
+            response.put("confianzaValue", prediction.getConfidenceValue());
+            response.put("datosCliente", datos);
 
-            return "admin/prediccion";
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
         } catch (Exception e) {
-            ticketflexService.logError("Error al realizar la predicción", e);
-            model.addAttribute("error", "Error interno al procesar la predicción: " + e.getMessage());
-            model.addAttribute("ticketflexData", datos);
-            return "admin/prediccion";
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "Error al procesar la predicción");
+            errorResponse.put("message", e.getMessage());
+
+            return ResponseEntity.internalServerError()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(errorResponse);
         }
     }
 
-    @GetMapping("/prediccion/buscar")
-    @ResponseBody
-    public ResponseEntity<TicketflexPrediccion> buscarClientePorId(@RequestParam Long id) {
-        Optional<TicketflexPrediccion> prediccion = ticketflexService.buscarPorIdCliente(id);
-        return prediccion.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PostMapping("/predecir-masivo")
+    public ResponseEntity<?> predecirAsistenciaMasiva(
+            @RequestBody EventoRequest eventoRequest,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false, defaultValue = "false") boolean mostrarTodos) {
+
+        try {
+            // Validación básica
+            if (eventoRequest.getGenero() == null || eventoRequest.getPrecio() == null) {
+                throw new IllegalArgumentException("Datos requeridos no proporcionados");
+            }
+
+            Page<PrediccionEventoResponse> resultados = ticketflexService
+                    .predecirAsistenciaMasivaPaginada(eventoRequest, page, size, mostrarTodos);
+
+            // Respuesta paginada mejorada
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", resultados.getContent());
+            response.put("totalElements", resultados.getTotalElements());
+            response.put("totalPages", resultados.getTotalPages());
+            response.put("currentPage", resultados.getNumber());
+            response.put("mostrarTodos", mostrarTodos); // Incluir el estado del filtro
+
+            return ResponseEntity.ok()
+                    .header("X-Total-Elements", String.valueOf(resultados.getTotalElements()))
+                    .body(response);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Datos inválidos",
+                    "message", e.getMessage(),
+                    "timestamp", LocalDateTime.now()));
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "error", "Error en predicción masiva",
+                    "message", "Ocurrió un error al procesar la solicitud",
+                    "timestamp", LocalDateTime.now()));
+        }
     }
 
+    
 }

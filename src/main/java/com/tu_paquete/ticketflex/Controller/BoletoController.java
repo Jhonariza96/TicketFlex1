@@ -15,9 +15,9 @@ public class BoletoController {
     private BoletoService boletoService;
 
     @PostMapping("/comprar")
-    public ResponseEntity<?> comprarBoleto(@RequestParam Integer idEvento, 
-                                         @RequestParam Integer idUsuario, 
-                                         @RequestParam Integer cantidad) {
+    public ResponseEntity<?> comprarBoleto(@RequestParam Integer idEvento,
+            @RequestParam Integer idUsuario,
+            @RequestParam Integer cantidad) {
         try {
             Boleto boleto = boletoService.comprarBoleto(idEvento, idUsuario, cantidad);
             return ResponseEntity.ok(boleto);
@@ -25,7 +25,7 @@ public class BoletoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     // Nuevo endpoint para manejar el pago con tarjeta
     @PostMapping("/pagar-tarjeta")
     public String procesarPago(@RequestBody PagoRequest pagoRequest) {
@@ -39,4 +39,3 @@ public class BoletoController {
         }
     }
 }
-
